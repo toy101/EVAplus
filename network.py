@@ -29,7 +29,7 @@ class QNetwork(nn.Module):
 class QNetworkWithValuebuffer(nn.Module):
 
     def __init__(self, n_actions, n_output_dim=256, ration_lambda=0.5,
-                 n_neighbors=5, vbuf_capacity=2000):
+                 n_neighbors=5, vbuf_capacity=100):
         super().__init__()
         self.embedding_size = n_output_dim
         self.ration_lambda=ration_lambda
@@ -39,12 +39,21 @@ class QNetworkWithValuebuffer(nn.Module):
                                     n_dim=n_output_dim)
         self.q_function = QNetwork(n_actions, n_output_dim)
 
-    def forward(self, x, eva_flag=False):
+        self.alpha = 0.5
+
+        self.threshold = 2*self.alpha/n_output_dim
+
+    def forward(self, x, eva_flag=False, plus_flag=True):
 
         param_q, h = self.q_function(x)
 
         if eva_flag and len(self.v_buffer) >= self.v_buffer.capacity:
-            non_param_q = self.v_buffer.get_non_param_q(h, self.n_neighbors)
+            if plus_flag:
+                non_param_q = self.v_buffer.get_non_param_q_plus(h, self.n_neighbors, self.threshold)
+                if len(non_param_q) <= 0:
+                    return param_q, h
+            else:
+                non_param_q = self.v_buffer.get_non_param_q(h, self.n_neighbors)
             return DiscreteActionValue(self.ration_lambda*param_q.q_values + (1-self.ration_lambda)*non_param_q), h
         else:
             return param_q, h

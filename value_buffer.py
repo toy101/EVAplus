@@ -28,5 +28,15 @@ class ValueBuffer:
 
         return torch.mean(non_q_values, dim=0).reshape(1, -1)
 
+    def get_non_param_q_plus(self, current_h, n_index, threshold):
+
+        assert len(self.h_memory) == self.q_memory.size()[0]
+
+        current_h = torch.from_numpy(current_h).clone()
+        indices = self.h_memory.restrain_search(current_h, n_index, threshold)
+        non_q_values = self.q_memory[indices]
+
+        return torch.mean(non_q_values, dim=0).reshape(1, -1)
+
     def __len__(self):
         return self.q_memory.size()[0]

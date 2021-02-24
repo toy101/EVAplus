@@ -38,5 +38,19 @@ class LSMKNNBuffer:
 
         return index_arr.tolist()
 
+    def restrain_search(self, target:torch.Tensor, n_index:int, threshold:float):
+
+        assert target.size() == torch.Size([1, self.n_dim])
+
+        target = target.to(self.device)
+
+        l2_distances = torch.sum((self.memory-target)**2, dim=1)
+        index_arr = torch.argsort(l2_distances)[:n_index]
+        l2_distances = l2_distances[index_arr]
+
+        restrain_index_arr =index_arr[l2_distances <= threshold]
+
+        return restrain_index_arr.tolist()
+
     def __len__(self):
         return self.memory.size()[0]
