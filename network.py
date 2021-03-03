@@ -50,7 +50,7 @@ class QNetworkWithValuebuffer(nn.Module):
         if eva_flag and len(self.v_buffer) >= self.v_buffer.capacity:
             if plus_flag:
                 non_param_q = self.v_buffer.get_non_param_q_plus(h, self.n_neighbors, self.threshold)
-                if len(non_param_q) <= 0:
+                if torch.isnan(non_param_q).any():
                     return param_q, h
             else:
                 non_param_q = self.v_buffer.get_non_param_q(h, self.n_neighbors)
