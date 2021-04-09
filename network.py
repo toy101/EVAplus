@@ -39,7 +39,7 @@ class QNetworkWithValuebuffer(nn.Module):
                                     n_dim=n_output_dim)
         self.q_function = QNetwork(n_actions, n_output_dim)
 
-        self.alpha = 0.5
+        self.alpha = 1.0
 
         self.threshold = 2*self.alpha/n_output_dim
 
