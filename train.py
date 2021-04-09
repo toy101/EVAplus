@@ -180,7 +180,7 @@ def main():
     test_seed = 2 ** 31 - 1 - args.seed
 
     args.outdir = make_output_dir(
-        args, args.outdir, time_format='{}/{}_%Y%m%dT%H%M%S'.format(args.env, args.agent))
+        args, args.outdir, time_format='{}_{}'.format(args.env, args.seed))
     print("Output files are saved in {}".format(args.outdir))
 
     def make_env(test):
